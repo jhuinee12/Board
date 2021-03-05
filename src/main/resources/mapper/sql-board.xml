@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board.board.mapper.BoardMapper">
+	<select id="selectBoardList" resultType="board.board.dto.BoardDto">
+		<![CDATA[
+			SELECT 
+				BOARD_IDX,
+				TITLE,
+				HIT_CNT,
+				CREATED_DATETIME
+			FROM T_BOARD
+			WHERE DELETED_YN = 'N'
+			ORDER BY BOARD_IDX DESC
+		]]>
+	</select>
+	
+	<insert id="insertBoard" parameterType="board.board.dto.BoardDto">
+		<![CDATA[
+			INSERT INTO T_BOARD
+			(
+				TITLE,
+				CONTENTS,
+				CREATED_DATETIME,
+				CREATER_ID
+			)
+			VALUES(
+				#{title},
+				#{contents},
+				NOW(),
+				'admin'
+			)
+		]]>
+	</insert>
+	
+	<select id="selectBoardDetail" parameterType="int" resultType="board.board.dto.BoardDto">
+		<![CDATA[
+			SELECT 
+				*
+			FROM T_BOARD
+			WHERE BOARD_IDX = #{boardIdx}
+			AND DELETED_YN = 'N'
+		]]>
+	</select>
+	
+	
+	<update id="updateHitCount" parameterType="int">
+		<![CDATA[
+			UPDATE T_BOARD
+			SET HIT_CNT = HIT_CNT + 1
+			WHERE BOARD_IDX = #{boardIdx}
+		]]>
+	</update>
+	
+	<update id="updateBoard" parameterType="board.board.dto.BoardDto">
+		<![CDATA[
+			UPDATE T_BOARD
+			SET 
+				TITLE = #{title},
+				CONTENTS = #{contents},
+				UPDATER_ID = 'admin2',
+				UPDATED_DATETIME = NOW()
+			WHERE BOARD_IDX = #{boardIdx}
+		]]>
+	</update>
+
+	<update id="deleteBoard" parameterType="int">
+		UPDATE T_BOARD
+		SET 
+			DELETED_YN = 'Y',
+			UPDATER_ID = 'admin3',
+			UPDATED_DATETIME = NOW()
+		WHERE BOARD_IDX = #{boardIdx}
+	</update>
+</mapper>
